@@ -17,7 +17,7 @@ else:
 	human_input = 0
 	REFRESH_RATE = 60
 	moves = 0
-	Self.DF = DecisionFactory.DecisionFactory()
+	DF = DecisionFactory()
 
 pause = (int)(1000.0/REFRESH_RATE)
 
@@ -116,7 +116,7 @@ while(running):
 	        elif (event.type is pygame.KEYUP):
 	            move_type = 4
 	else:
-		move_type = Self.DF.get_decision()
+		move_type = DF.get_decision()
 		# This is decremented because in the DecisionFactory code 0 is the wait
 		# decision so this is to compensate and align with the human input code
 		move_type -= 1
@@ -154,7 +154,7 @@ while(running):
 			result = "Success"
 
 	if human_input is 0:
-		Self.DF.put_result(result)
+		DF.put_result(result)
 		moves += 1
 
     pygame.time.wait(pause)
