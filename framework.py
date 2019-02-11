@@ -4,25 +4,27 @@ Version 0.4
 Authors: Sean McGee and Preston Mouw
 '''
 import pygame
-from DecisionFactory import *
+import DecisionFactory
 
+pygame.init()
 #asks user if df will play or human will play
 
-player = raw_input("Who will play? (H)uman or (D)ecisionFactory")
-
-if player is 'H' or player is 'h':
+#player = input("Who will play? Human(1) or DecisionFactory(0)\n")
+player = 0
+human_input = 0
+DF = DecisionFactory.DecisionFactory('Dice Roller 2000')
+moves = 0
+if player is 1: #or (player is 'h'):
 	human_input = 1
-	REFRESH_RATE = 8 #how many times the game checks for input and updates per sec
+	REFRESH_RATE = 12 #how many times the game checks for input and updates per sec
 else:
 	human_input = 0
 	REFRESH_RATE = 60
-	moves = 0
-	DF = DecisionFactory()
+	
+    
+#print(human_input)
 
 pause = (int)(1000.0/REFRESH_RATE)
-
-
-pygame.init()
 
 COL = 16
 ROW = 16
@@ -31,13 +33,13 @@ map_t = [[ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
          [ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
          [ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
          [ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-         [ 1, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
          [ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
          [ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
          [ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
          [ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
          [ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
          [ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+         [ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 1],
          [ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
          [ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
          [ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
@@ -64,13 +66,90 @@ player_x = 1
 player_y = 1
 
 move_type = 4
-#0: up
-#1: down
-#2: left
+#0: wait
+#1: up
+#2: down
 #3: right
-#4: wait
-while(running):
+#4: left
 
+timer = pygame.time.Clock()
+while(running):
+    events = pygame.event.get()
+    if human_input is 1:
+        for event in events:
+            if event.type is pygame.QUIT:
+                pygame.quit()
+                running = 0
+            elif (event.type is pygame.KEYDOWN):
+                keys = pygame.key.get_pressed()
+                
+                #print(event.key)
+                if keys[pygame.K_UP]:
+                    move_type = 1
+                    #print('UP KEY PRESSED')
+                elif keys[pygame.K_DOWN]:
+                    move_type = 2
+                    #print('DOWN KEY PRESSED')
+                elif keys[pygame.K_LEFT]:
+                    move_type = 4
+                    #print('LEFT KEY PRESSED')
+                elif keys[pygame.K_RIGHT]:
+                    move_type = 3
+                    #print('RIGHT KEY PRESSED')
+            elif (event.type is pygame.KEYUP):
+                move_type = 0
+    else:
+        d = DF.get_decision()
+        if d is 'wait':
+            move_type = 0
+        elif d is 'up':
+            move_type = 1
+        elif d is 'down':
+            move_type = 2
+        elif d is 'right':
+            move_type = 3
+        elif d is 'left':
+            move_type = 4
+        
+    #print(move_type)
+    if move_type is 1:
+        moves += 1
+        player_x -= 1
+        if map_t[player_x][player_y] is 1:
+            player_x += 1
+            result = "Wall"
+        else:
+            result = "Success"
+    elif move_type is 2:
+        moves += 1
+        player_x += 1
+        if map_t[player_x][player_y] is 1:
+            player_x -= 1
+            result = "Wall"
+        else:
+            result = "Success"
+    elif move_type is 4:
+        moves += 1
+        player_y -= 1
+        if map_t[player_x][player_y] is 1:
+            player_y += 1
+            result = "Wall"
+        else:
+            result = "Success"
+    elif move_type is 3:
+        moves += 1
+        player_y += 1
+        if map_t[player_x][player_y] is 1:
+            player_y -= 1
+            result = "Wall"
+        else:
+            result = "Success"
+
+	if human_input is 0:
+		DF.put_result(result)
+		moves += 1
+        
+    timer.tick(REFRESH_RATE)
     for r in range(0, ROW):
         for c in range(0, COL):
             if map_t[r][c] is 1:
@@ -89,75 +168,9 @@ while(running):
 
     if portal[0] is player_y and portal[1] is player_x:
         pygame.quit()
-        if human_input is 0:
-			print moves
+        print(moves)
         running = 0
 
-	if human_input is 1:
-	    for event in pygame.event.get():
-	        if event.type is pygame.QUIT:
-	            pygame.quit()
-	            running = 0
-	        elif (event.type is pygame.KEYDOWN):
-	            keys = pygame.key.get_pressed()
-	            #print(event.key)
-	            if keys[pygame.K_UP]:
-	                move_type = 0
-	                #print('UP KEY PRESSED')
-	            elif keys[pygame.K_DOWN]:
-	                move_type = 1
-	                #print('DOWN KEY PRESSED')
-	            elif keys[pygame.K_LEFT]:
-	                move_type = 2
-	                #print('LEFT KEY PRESSED')
-	            elif keys[pygame.K_RIGHT]:
-	                move_type = 3
-	                #print('RIGHT KEY PRESSED')
-	        elif (event.type is pygame.KEYUP):
-	            move_type = 4
-	else:
-		move_type = DF.get_decision()
-		# This is decremented because in the DecisionFactory code 0 is the wait
-		# decision so this is to compensate and align with the human input code
-		move_type -= 1
-
-	if move_type is 0:
-			player_x -= 1
-        if map_t[player_x][player_y] is 1:
-            player_x += 1
-            result = "Wall"
-        else:
-			result = "Success"
-
-    elif move_type is 1:
-        player_x += 1
-        if map_t[player_x][player_y] is 1:
-            player_x -= 1
-            result = "Wall"
-        else:
-			result = "Success"
-
-    elif move_type is 2:
-        player_y -= 1
-        if map_t[player_x][player_y] is 1:
-            player_y += 1
-            result = "Wall"
-        else:
-			result = "Success"
-
-    elif move_type is 3:
-        player_y += 1
-        if map_t[player_x][player_y] is 1:
-            player_y -= 1
-            result = "Wall"
-        else:
-			result = "Success"
-
-	if human_input is 0:
-		DF.put_result(result)
-		moves += 1
-
-    pygame.time.wait(pause)
 
 '''
 Change log
