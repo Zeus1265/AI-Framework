@@ -75,12 +75,12 @@ move_type = 4
 timer = pygame.time.Clock()
 while(running):
     events = pygame.event.get()
-    if human_input is 1:
-        for event in events:
-            if event.type is pygame.QUIT:
-                pygame.quit()
-                running = 0
-            elif (event.type is pygame.KEYDOWN):
+    for event in events:
+        if event.type is pygame.QUIT:
+            pygame.quit()
+            running = 0
+        if human_input is 1:
+            if (event.type is pygame.KEYDOWN):
                 keys = pygame.key.get_pressed()
                 
                 #print(event.key)
@@ -145,11 +145,13 @@ while(running):
         else:
             result = "Success"
 
-	if human_input is 0:
-		DF.put_result(result)
-		moves += 1
+    if human_input is 0:
+        DF.put_result(result)
+        moves += 1
+        #print(result)
         
-    timer.tick(REFRESH_RATE)
+    #timer.tick(REFRESH_RATE)
+    timer.tick(10)
     for r in range(0, ROW):
         for c in range(0, COL):
             if map_t[r][c] is 1:
@@ -174,6 +176,8 @@ while(running):
 
 '''
 Change log
+Ver 1.0:
+Increased AI ability of decision factory to better than random
 Ver 0.4:
 Added ability to use df or human input
 Ver 0.3:
