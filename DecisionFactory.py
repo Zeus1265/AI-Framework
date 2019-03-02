@@ -72,7 +72,7 @@ class DecisionFactory:
                         self.map[i][j] = self.map[i][j-1]
                     self.map[i][0] = -1
 
-                self.location[1] += 1
+                self.location[0] += 1
             elif self.location[0] == (len(self.map[0])-1):
                 #shifting unnecessary
                 for i in range(0, len(self.map)):
