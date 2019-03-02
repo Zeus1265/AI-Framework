@@ -52,17 +52,17 @@ class DecisionFactory:
 
             #add rows/cols to map if needed
 
-            if self.location[0] == 0:
+            if self.location[1] == 0:
                 #location and map must be shifted
                 self.map.append([-1]*len(self.map[0]))
                 for i in range(len(self.map)-1,0,-1):
                     self.map[i] = self.map[i-1]
                 self.map[0] = [-1]*len(self.map[0])
                 self.location[1] += 1
-            elif self.location[0] == (len(self.map)-1):
+            elif self.location[1] == (len(self.map)-1):
                 #shifting unnecessary
                 self.map.append([-1]*len(self.map[0]))
-            elif self.location[1] == 0:
+            elif self.location[0] == 0:
                 #location and map must be shifted
                 for i in range(0, len(self.map)):
                     self.map[i].append(-1)
@@ -73,9 +73,10 @@ class DecisionFactory:
                     self.map[i][0] = -1
 
                 self.location[1] += 1
-            elif self.location[1] == (len(self.map[0])-1):
+            elif self.location[0] == (len(self.map[0])-1):
                 #shifting unnecessary
                 for i in range(0, len(self.map)):
                     self.map[i].append(-1)
-        print self.map
+        for i in range(0, len(self.map)):
+            print self.map[i]
         print self.location
