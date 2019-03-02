@@ -77,3 +77,5 @@ class DecisionFactory:
                 #shifting unnecessary
                 for i in range(0, len(self.map)):
                     self.map[i].append(-1)
+        print self.map
+        print self.location
