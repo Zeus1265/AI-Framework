@@ -4,6 +4,7 @@ Version 0.4
 Authors: Sean McGee and Preston Mouw
 '''
 import pygame
+import random
 import DecisionFactory
 
 pygame.init()
@@ -31,21 +32,23 @@ ROW = 16
 
 map_t = [[ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
          [ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+         [ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1],
+         [ 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1],
+         [ 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+         [ 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+         [ 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+         [ 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 1],
          [ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
          [ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-         [ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-         [ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-         [ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-         [ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-         [ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-         [ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-         [ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 1],
+         [ 1, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1],
          [ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
          [ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
          [ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
          [ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
          [ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]]
 
+
+map_t[(int)(random.random() * 14 + 1)][(int)(random.random() * 14 + 1)] = 2
 TILE_SZ = 32
 
 size = (1200, 800)
@@ -59,11 +62,17 @@ GREY = pygame.Color(90, 90, 90, 0)
 WHITE = pygame.Color(255, 255, 255, 0)
 GREEN = pygame.Color(0, 255, 0, 0)
 
-portal = [0, 0]
+#portal = [0, 0]
 
 running = 1
-player_x = 1
-player_y = 1
+
+inWall = True
+while(inWall):
+    player_x = (int)(random.random() * 14 + 1)
+    player_y = (int)(random.random() * 14 + 1)
+
+    if map_t[player_y][player_x] is not 1:
+        inWall = False
 
 move_type = 4
 #0: wait
@@ -115,7 +124,7 @@ while(running):
     if move_type is 1:
         moves += 1
         player_x -= 1
-        if map_t[player_x][player_y] is 1:
+        if map_t[player_y][player_x] is 1:
             player_x += 1
             result = "Wall"
         else:
@@ -123,7 +132,7 @@ while(running):
     elif move_type is 2:
         moves += 1
         player_x += 1
-        if map_t[player_x][player_y] is 1:
+        if map_t[player_y][player_x] is 1:
             player_x -= 1
             result = "Wall"
         else:
@@ -131,7 +140,7 @@ while(running):
     elif move_type is 4:
         moves += 1
         player_y -= 1
-        if map_t[player_x][player_y] is 1:
+        if map_t[player_y][player_x] is 1:
             player_y += 1
             result = "Wall"
         else:
@@ -139,7 +148,7 @@ while(running):
     elif move_type is 3:
         moves += 1
         player_y += 1
-        if map_t[player_x][player_y] is 1:
+        if map_t[player_y][player_x] is 1:
             player_y -= 1
             result = "Wall"
         else:
@@ -150,7 +159,7 @@ while(running):
         moves += 1
         #print(result)
         
-    #timer.tick(REFRESH_RATE)
+    timer.tick(REFRESH_RATE)
     timer.tick(10)
     for r in range(0, ROW):
         for c in range(0, COL):
@@ -176,8 +185,11 @@ while(running):
 
 '''
 Change log
+Ver 1.1:
+Fixed Decision factory to work with Cone's framework maybe hopefully
 Ver 1.0:
 Increased AI ability of decision factory to better than random
+Did not actually integrate with Cone's Framework :C
 Ver 0.4:
 Added ability to use df or human input
 Ver 0.3:
