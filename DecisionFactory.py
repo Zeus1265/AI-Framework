@@ -10,14 +10,14 @@ class DecisionFactory:
         self.map = [[-1, -1, -1],
                     [-1,  0, -1],
                     [-1, -1, -1]]
-        self.location = (1, 1)
+        self.location = [1, 1]
         #self.walls_hit = 0
         #self.move_mod = -1
         # Note : we have relativistic coordinates recorded here, since the map
         # self.state.pos = (0, 0)
     def get_decision(self, verbose = True):
         #made random walk to test map
-        rng = random.random() * 4 + 1
+        rng = int(random.random() * 4 + 1)
         self.last_direction = self.directions[rng]
         return self.last_direction
 
