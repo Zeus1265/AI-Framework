@@ -5,33 +5,75 @@ class DecisionFactory:
     def __init__(self, name ='Davros'):
         self.name = name
         self.directions = ['wait', 'up', 'down', 'right', 'left']
-        self.last_result = 'Success'
+        self.last_result = 'SUCCESS'
         self.last_direction = 'wait'
-        self.walls_hit = 0
-        self.move_mod = -1
+        self.map = [[-1, -1, -1],
+                    [-1,  0, -1],
+                    [-1, -1, -1]]
+        self.location = (1, 1)
+        #self.walls_hit = 0
+        #self.move_mod = -1
         # Note : we have relativistic coordinates recorded here, since the map
         # self.state.pos = (0, 0)
     def get_decision(self, verbose = True):
-        if self.walls_hit is 0:
-            self.last_direction = self.directions[2]
-            return self.directions[2]
-        elif self.walls_hit is 1:
-            self.last_direction = self.directions[3]
-            return self.directions[3]
-        else:
-            self.last_direction = self.climb()
-            return self.last_direction
+        #made random walk to test map
+        rng = random.random() * 4 + 1
+        self.last_direction = self.directions[rng]
+        return self.last_direction
 
-    def climb(self):
-        if self.last_result is 'Wall' and self.walls_hit is not 2:
-            self.move_mod = -1 * self.move_mod
-            return self.directions[1]
-        elif self.move_mod is -1:
-            return self.directions[4]
-        else:
-            return self.directions[3]
-    
     def put_result(self, result):
-        self.last_result = result
-        if result is 'Wall':
-            self.walls_hit += 1
+        self.last_result = result.upper()
+        x = self.location[0]
+        y = self.location[1]
+        if self.last_result == "WALL":
+            #location should not change
+            if self.last_direction == "up":
+                self.map[y-1][x] = 1
+            elif self.last_direction == "down":
+                self.map[y+1][x] = 1
+            elif self.last_direction == "right":
+                self.map[y][x+1] = 1
+            elif self.last_direction == "left":
+                self.map[y][x-1] = 1
+        else:
+            #fill out map and update location
+            if self.last_direction == "up":
+                self.map[y-1][x] = 0
+                self.location[1] -= 1
+            elif self.last_direction == "down":
+                self.map[y+1][x] = 0
+                self.location[1] += 1
+            elif self.last_direction == "right":
+                self.map[y][x+1] = 0
+                self.location[0] += 1
+            elif self.last_direction == "left":
+                self.map[y][x-1] = 0
+                self.location[0] -= 1
+
+            #add rows/cols to map if needed
+
+            if self.location[0] == 0:
+                #location and map must be shifted
+                self.map.append([-1]*len(self.map[0]))
+                for i in range(len(self.map)-1,0,-1):
+                    self.map[i] = self.map[i-1]
+                self.map[0] = [-1]*len(self.map[0])
+                self.location[1] += 1
+            elif self.location[0] == (len(self.map)-1):
+                #shifting unnecessary
+                self.map.append([-1]*len(self.map[0]))
+            elif self.location[1] == 0:
+                #location and map must be shifted
+                for i in range(0, len(self.map)):
+                    self.map[i].append(-1)
+
+                for i in range(0, len(self.map)):
+                    for j in range(len(self.map[0])-1, 0, -1):
+                        self.map[i][j] = self.map[i][j-1]
+                    self.map[i][0] = -1
+
+                self.location[1] += 1
+            elif self.location[1] == (len(self.map[0])-1):
+                #shifting unnecessary
+                for i in range(0, len(self.map)):
+                    self.map[i].append(-1)
