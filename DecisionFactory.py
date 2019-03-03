@@ -19,11 +19,11 @@ class DecisionFactory:
         # Note : we have relativistic coordinates recorded here, since the map
         # self.state.pos = (0, 0)
 
-    def distance(player, location):
-        return math.sqrt(math.square(location[0] - player[0]) + math.sqaure(location[1] - player[1]))
+    def distance(self, player, location):
+        return math.sqrt(math.pow(location[0] - player[0], 2) + math.pow(location[1] - player[1], 2))
 
-    def dir_chooser(player, location):
-        if math.abs(location[0] - player[0]) < math.abs(location[1] - player[1]):
+    def dir_chooser(self, player, location):
+        if math.fabs(location[0] - player[0]) < math.fabs(location[1] - player[1]):
             if location[0] > player[0]:
                 dir = 3
             else:
@@ -49,10 +49,10 @@ class DecisionFactory:
                         elif self.distance(self.location, [j,i]) < self.closest_unknown_distance:
                             self.closest_unknown = []
                             self.closest_unknown.append([j,i])
-                            self.closest_unknown_distance = distance(self.location, self.closest_unknown[0])
+                            self.closest_unknown_distance = self.distance(self.location, self.closest_unknown[0])
 
-        if len(closest_unknown) > 1:
-            index = int(random.random() * len(closest_unknown))
+        if len(self.closest_unknown) > 1:
+            index = int(random.random() * len(self.closest_unknown))
         else:
             index = 0
 
