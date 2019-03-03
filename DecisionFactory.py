@@ -23,20 +23,22 @@ class DecisionFactory:
         return math.sqrt(math.pow(location[0] - player[0], 2) + math.pow(location[1] - player[1], 2))
 
     def dir_chooser(self, player, location):
-        if math.fabs(location[0] - player[0]) < math.fabs(location[1] - player[1]):
+        if math.fabs(location[0] - player[0]) > math.fabs(location[1] - player[1]):
             if location[0] > player[0]:
                 dir = 3
             elif location[0] < player[0]:
                 dir = 4
             else:
                 dir = int(random.random()) + 3
-        else:
+        elif math.fabs(location[0] - player[0]) < math.fabs(location[1] - player[1]):
             if location[1] > player[1]:
                 dir = 2
             elif location[1] < player[1]:
                 dir = 1
             else:
                 dir = int(random.random())+1
+        else:
+            dir = int(random.random() * 4) + 1
         return dir
 
     def get_decision(self, verbose = True):
@@ -71,16 +73,17 @@ class DecisionFactory:
                                 self.closest_unknown.append([j,i])
                                 self.closest_unknown_distance = self.distance(self.location, self.closest_unknown[0])
         
-        #print self.closest_unknown
-        if len(self.closest_unknown) > 1:
+        print self.closest_unknown
+        if len(self.closest_unknown) > 0:
             index = int(random.random() * len(self.closest_unknown))
         else:
             index = 0
-
+        
+        print self.closest_unknown[index]
         dir = self.dir_chooser(self.location, self.closest_unknown[index])
 
         self.last_direction = self.directions[dir]
-        #print self.last_direction
+        print self.last_direction
         return self.last_direction
 
     def put_result(self, result):
