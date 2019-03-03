@@ -26,31 +26,52 @@ class DecisionFactory:
         if math.fabs(location[0] - player[0]) < math.fabs(location[1] - player[1]):
             if location[0] > player[0]:
                 dir = 3
-            else:
+            elif location[0] < player[0]:
                 dir = 4
+            else:
+                dir = int(random.random()) + 3
         else:
             if location[1] > player[1]:
                 dir = 2
-            else:
+            elif location[1] < player[1]:
                 dir = 1
+            else:
+                dir = int(random.random())+1
         return dir
 
     def get_decision(self, verbose = True):
-
+        self.closest_unknown = []
         for i in range(0, len(self.map)):
             for j in range(0, len(self.map[0])):
                 if self.map[i][j] == -1:
+                    left_w = True
+                    right_w = True
+                    top_w = True
+                    bot_w = True
+                    #don't check edges
+                    if i != 0:
+                        left_w = (self.map[i-1][j] == 1)
+                    if i != len(self.map)-1:
+                        right_w = (self.map[i+1][j] == 1)
+                    if j != 0:
+                        top_w = (self.map[i][j-1] == 1)
+                    if j != len(self.map[0])-1:
+                        bot_w = (self.map[i][j+1] == 1)
+
                     if self.closest_unknown == []:
-                        self.closest_unknown.append([j,i])
-                        self.closest_unknown_distance = self.distance(self.location, self.closest_unknown[0])
-                    else:
-                        if self.distance(self.location, [j,i]) == self.closest_unknown_distance:
-                            self.closest_unknown.append([j,i])
-                        elif self.distance(self.location, [j,i]) < self.closest_unknown_distance:
-                            self.closest_unknown = []
+                        if not (left_w and right_w and top_w and bot_w):
                             self.closest_unknown.append([j,i])
                             self.closest_unknown_distance = self.distance(self.location, self.closest_unknown[0])
-
+                    else:
+                        if not (left_w and right_w and top_w and bot_w):
+                            if self.distance(self.location, [j,i]) == self.closest_unknown_distance:
+                                self.closest_unknown.append([j,i])
+                            elif self.distance(self.location, [j,i]) < self.closest_unknown_distance:
+                                self.closest_unknown = []
+                                self.closest_unknown.append([j,i])
+                                self.closest_unknown_distance = self.distance(self.location, self.closest_unknown[0])
+        
+        #print self.closest_unknown
         if len(self.closest_unknown) > 1:
             index = int(random.random() * len(self.closest_unknown))
         else:
@@ -59,6 +80,7 @@ class DecisionFactory:
         dir = self.dir_chooser(self.location, self.closest_unknown[index])
 
         self.last_direction = self.directions[dir]
+        #print self.last_direction
         return self.last_direction
 
     def put_result(self, result):
