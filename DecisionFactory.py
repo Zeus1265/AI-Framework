@@ -1,4 +1,5 @@
 import random
+import math
 #import  numpy as  np
 
 class DecisionFactory:
@@ -11,14 +12,53 @@ class DecisionFactory:
                     [-1,  0, -1],
                     [-1, -1, -1]]
         self.location = [1, 1]
+        self.closest_unknown = [[]]
+        self.closest_unknown_distance = 99999
         #self.walls_hit = 0
         #self.move_mod = -1
         # Note : we have relativistic coordinates recorded here, since the map
         # self.state.pos = (0, 0)
+
+    def distance(player, location):
+        return math.sqrt(math.square(location[0] - player[0]) + math.sqaure(location[1] - player[1]))
+
+    def dir_chooser(player, location):
+        if math.abs(location[0] - player[0]) < math.abs(location[1] - player[1]):
+            if location[0] > player[0]:
+                dir = 3
+            else:
+                dir = 4
+        else:
+            if location[1] > player[1]:
+                dir = 2
+            else:
+                dir = 1
+        return dir
+
     def get_decision(self, verbose = True):
-        #made random walk to test map
-        rng = int(random.random() * 4 + 1)
-        self.last_direction = self.directions[rng]
+
+        for i in range(0, len(self.map)):
+            for j in range(0, len(self.map[0])):
+                if self.map[i][j] == -1:
+                    if self.closest_unknown == []:
+                        self.closest_unknown.append([j,i])
+                        self.closest_unknown_distance = self.distance(self.location, self.closest_unknown[0])
+                    else:
+                        if self.distance(self.location, [j,i]) == self.closest_unknown_distance:
+                            self.closest_unknown.append([j,i])
+                        elif self.distance(self.location, [j,i]) < self.closest_unknown_distance:
+                            self.closest_unknown = []
+                            self.closest_unknown.append([j,i])
+                            self.closest_unknown_distance = distance(self.location, self.closest_unknown[0])
+
+        if len(closest_unknown) > 1:
+            index = int(random.random() * len(closest_unknown))
+        else:
+            index = 0
+
+        dir = self.dir_chooser(self.location, self.closest_unknown[index])
+
+        self.last_direction = self.directions[dir]
         return self.last_direction
 
     def put_result(self, result):
