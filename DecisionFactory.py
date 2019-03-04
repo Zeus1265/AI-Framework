@@ -8,6 +8,18 @@ class DecisionFactory:
         self.directions = ['wait', 'up', 'down', 'right', 'left']
         self.last_result = 'SUCCESS'
         self.last_direction = 'wait'
+        self.target = [0,0]
+        self.target_reached = True
+        self.unreachables = []
+        '''
+        self.map = [[ 1, 1, 1, 1, 1, 1, 1],
+                    [ 1, 0, 0, 0, 0, 0, 1],
+                    [ 1, 0, 0, -1, 0, 0, 1],
+                    [ 1, 0, 1, 1, 1, 0, 1],
+                    [ 1, 0, 0, 0, 0, 0, 1],
+                    [ 1, 0, 0, 0, 0, 0, 1],
+                    [ 1, 1, 1, 1, 1, 1, 1]]
+        '''
         self.map = [[-1, -1, -1],
                     [-1,  0, -1],
                     [-1, -1, -1]]
@@ -41,11 +53,12 @@ class DecisionFactory:
             dir = int(random.random() * 4) + 1
         return dir
 
-    def get_decision(self, verbose = True):
+    def get_target(self):
+        print self.unreachables
         self.closest_unknown = []
         for i in range(0, len(self.map)):
             for j in range(0, len(self.map[0])):
-                if self.map[i][j] == -1:
+                if self.map[i][j] == -1 and [j, i] not in self.unreachables:
                     left_w = True
                     right_w = True
                     top_w = True
@@ -72,18 +85,21 @@ class DecisionFactory:
                                 self.closest_unknown = []
                                 self.closest_unknown.append([j,i])
                                 self.closest_unknown_distance = self.distance(self.location, self.closest_unknown[0])
-        
-        print self.closest_unknown
-        if len(self.closest_unknown) > 0:
-            index = int(random.random() * len(self.closest_unknown))
-        else:
-            index = 0
-        
-        print self.closest_unknown[index]
-        dir = self.dir_chooser(self.location, self.closest_unknown[index])
+
+        return self.closest_unknown[(int)(random.random() * len(self.closest_unknown))]
+
+
+    def get_decision(self, verbose = True):
+        if self.target_reached:
+            #self.unreachables = []
+            self.target = self.get_target()
+            self.target_reached = False
+                                
+        dir = self.dir_chooser(self.location, self.target)
 
         self.last_direction = self.directions[dir]
         print self.last_direction
+        print self.target
         return self.last_direction
 
     def put_result(self, result):
@@ -100,6 +116,23 @@ class DecisionFactory:
                 self.map[y][x+1] = 1
             elif self.last_direction == "left":
                 self.map[y][x-1] = 1
+
+            x_mod = 0
+            y_mod = 0
+            if self.last_direction == "up":
+                y_mod = -1
+            elif self.last_direction == "down":
+                y_mod = 1
+            elif self.last_direction == "left":
+                x_mod = -1
+            elif self.last_direction == "right":
+                x_mod = 1
+            if self.target == [x + x_mod, y + y_mod]:
+                self.target_reached = True
+                self.unreachables = []
+            else:
+                self.unreachables.append(self.target)
+                self.target_reached = True
         else:
             #fill out map and update location
             if self.last_direction == "up":
@@ -142,6 +175,11 @@ class DecisionFactory:
                 #shifting unnecessary
                 for i in range(0, len(self.map)):
                     self.map[i].append(-1)
+
+            self.target_reached = self.target == [x, y]
+            if self.target_reached:
+                self.unreachables = []
+
         for i in range(0, len(self.map)):
             print self.map[i]
         print self.location
