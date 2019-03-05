@@ -63,7 +63,7 @@ class DecisionFactory:
         return dir
 
     def get_target(self):
-        print self.unreachables
+        #print "List of unreachable points: "+str(self.unreachables)
         self.closest_unknown = []
         for i in range(0, len(self.map)):
             for j in range(0, len(self.map[0])):
@@ -127,12 +127,18 @@ class DecisionFactory:
         if self.last_direction == self.directions[default_movement] and self.last_result == "SUCCESS":
             return wall_direction
         elif self.last_direction == self.directions[default_movement] and self.last_result == "WALL":
-            self.tasks.append("wall_"+wall_direction)
-            self.wall_climber_modifier[len(self.wall_climber_modifier)-1] = -1
+            self.tasks.append("wall_"+self.direction[default_movement])
+            new_mod = 0
+            if (int)(random.random() * 2) == 0:
+                new_mod = -1
+            else:
+                new_mod = 1
+            self.wall_climber_modifier.appened(new_mod)
             return self.directions[self.direction_inverter(default_movement)]
         elif self.last_direction == wall_direction and self.last_result == "WALL":
             return self.directions[default_movement]
         elif self.last_direction == wall_direction and self.last_result == "SUCCESS":
+            print "Task removed by wall_climber alg"
             self.tasks.pop()
             self.wall_climber_modifier.pop()
             return wall_direction
@@ -141,6 +147,9 @@ class DecisionFactory:
     def get_decision(self, verbose = True):
 
         if len(self.tasks) == 0 or self.tasks[len(self.tasks) - 1] == "target":
+            if len(self.tasks) == 0:
+                self.tasks.append("target")
+                print "Added \'target\' task"
             if self.target_reached:
                 #self.unreachables = []
                 self.target = self.get_target()
@@ -153,35 +162,39 @@ class DecisionFactory:
             else:
                 #add in wall movements
                 self.tasks.pop()
+                print "Removed a task"
                 self.wall_climber_modifier.append(1)
                 self.tasks.append("wall_"+self.last_direction)
+                print "Added a wall task"
+                self.target_reached = True
 
             
             print "Last Direction: "+self.last_direction
             print "Target: "+str(self.target)
+            print "Tasks: "+str(self.tasks)
             return self.last_direction
         elif self.tasks[len(self.tasks)-1] != "target":
             top = len(self.tasks) - 1
             
-            if self.tasks(top) == "wall_up":
+            if self.tasks[top] == "wall_up":
                 #wall encountered is *above* DF
                 #default move left, mod move right
                 self.last_direction = self.wall_climber("up", 4)
-            elif self.tasks(top) == "wall_down":
+            elif self.tasks[top] == "wall_down":
                 #wall encountered is *below* DF
                 #default move right, mod move left
                 self.last_direction = self.wall_climber("down", 3)
-            elif self.tasks(top) == "wall_right":
+            elif self.tasks[top] == "wall_right":
                 #wall encountered is *right* of DF
                 #default move up, mod move down
                 self.last_direction = self.wall_climber("right", 1)
-            elif self.tasks(top) == "wall_left":
+            elif self.tasks[top] == "wall_left":
                 #wall encountered is *left* of DF
                 #default move down, mod move up
                 self.last_direction = self.wall_climber("left", 2)
             
             print self.last_direction
-            print self.tasks
+            print "Tasks: "+str(self.tasks)
             return self.last_direction
         else:
             return self.last_direction
@@ -264,6 +277,6 @@ class DecisionFactory:
             if self.target_reached:
                 self.unreachables = []
 
-        for i in range(0, len(self.map)):
-            print self.map[i]
-        print self.location
+        #for i in range(0, len(self.map)):
+        #    print self.map[i]
+        #print "AI Relative location: " + str(self.location)
