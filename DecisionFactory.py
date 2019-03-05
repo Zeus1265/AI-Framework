@@ -101,6 +101,10 @@ class DecisionFactory:
         return self.closest_unknown[(int)(random.random() * len(self.closest_unknown))]
 
     def direction_inverter(self, direction):
+        #up -> down
+        #down -> up
+        #left -> right
+        #right -> left
         if direction == 1:
             return 2
         elif direction == 2:
@@ -112,9 +116,14 @@ class DecisionFactory:
         return 0
 
     def wall_climber(self, wall_direction, default_movement):
+        #wall_direction MUST match an entry in self.directions[]
+        #default_movement is an index corresponding to a direction in self.directions[]
+        #wall_climber_modifier is a stack of modifiers, which correspond to that level's wall_climber
+
+
         if self.wall_climber_modifier[len(self.wall_climber_modifier)-1] == -1: #modified case
             default_movement = self.direction_inverter(default_movement)
-
+        
         if self.last_direction == self.directions[default_movement] and self.last_result == "SUCCESS":
             return wall_direction
         elif self.last_direction == self.directions[default_movement] and self.last_result == "WALL":
