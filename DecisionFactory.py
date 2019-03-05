@@ -8,9 +8,13 @@ class DecisionFactory:
         self.directions = ['wait', 'up', 'down', 'right', 'left']
         self.last_result = 'SUCCESS'
         self.last_direction = 'wait'
-        self.target = [0,0]
-        self.target_reached = True
-        self.unreachables = []
+        self.target = [0,0] #where to path to
+        self.target_reached = True #whether or not a new target is needed
+        self.unreachables = [] #mark certain locations as unreachable. Try other locations first
+
+        self.tasks = [] #stack memory of what instructions to follow
+        self.wall_climber_modifier = [] #used by the wall climber algorithm to determine what direction to move in
+
         '''
         self.map = [[ 1, 1, 1, 1, 1, 1, 1],
                     [ 1, 0, 0, 0, 0, 0, 1],
@@ -41,16 +45,21 @@ class DecisionFactory:
             elif location[0] < player[0]:
                 dir = 4
             else:
-                dir = int(random.random()) + 3
+                dir = int(random.random()* 2) + 3
         elif math.fabs(location[0] - player[0]) < math.fabs(location[1] - player[1]):
             if location[1] > player[1]:
                 dir = 2
             elif location[1] < player[1]:
                 dir = 1
             else:
-                dir = int(random.random())+1
+                dir = int(random.random()*2)+1
         else:
-            dir = int(random.random() * 4) + 1
+            if location[0] > player[0]:
+                dir = (int)(random.random() * 2) + 2
+            elif (int)(random.random()*2) == 0:
+                dir = 1
+            else:
+                dir = 4
         return dir
 
     def get_target(self):
@@ -86,21 +95,86 @@ class DecisionFactory:
                                 self.closest_unknown.append([j,i])
                                 self.closest_unknown_distance = self.distance(self.location, self.closest_unknown[0])
 
+        if len(self.closest_unknown) == 0:
+            return [-1, -1]
+
         return self.closest_unknown[(int)(random.random() * len(self.closest_unknown))]
 
+    def direction_inverter(self, direction):
+        if direction == 1:
+            return 2
+        elif direction == 2:
+            return 1
+        elif direction == 3:
+            return 4
+        elif direction == 4:
+            return 3
+        return 0
+
+    def wall_climber(self, wall_direction, default_movement):
+        if self.wall_climber_modifier[len(self.wall_climber_modifier)-1] == -1: #modified case
+            default_movement = self.direction_inverter(default_movement)
+
+        if self.last_direction == self.directions[default_movement] and self.last_result == "SUCCESS":
+            return wall_direction
+        elif self.last_direction == self.directions[default_movement] and self.last_result == "WALL":
+            self.tasks.append("wall_"+wall_direction)
+            self.wall_climber_modifier[len(self.wall_climber_modifier)-1] = -1
+            return self.directions[self.direction_inverter(default_movement)]
+        elif self.last_direction == wall_direction and self.last_result == "WALL":
+            return self.directions[default_movement]
+        else:
+            self.tasks.pop()
+            self.wall_climber_modifier.pop()
+            return wall_direction
 
     def get_decision(self, verbose = True):
-        if self.target_reached:
-            #self.unreachables = []
-            self.target = self.get_target()
-            self.target_reached = False
-                                
-        dir = self.dir_chooser(self.location, self.target)
 
-        self.last_direction = self.directions[dir]
-        print self.last_direction
-        print self.target
-        return self.last_direction
+        if len(self.tasks) == 0 or self.tasks[len(self.tasks) - 1] == "target":
+            if self.target_reached:
+                #self.unreachables = []
+                self.target = self.get_target()
+                self.target_reached = False
+
+
+            if self.target[0] != -1 and self.target[1] != -1:               
+                dir = self.dir_chooser(self.location, self.target)
+                self.last_direction = self.directions[dir]
+            else:
+                #add in wall movements
+                self.tasks.pop()
+                self.wall_climber_modifier.append(1)
+                self.tasks.append("wall_"+self.last_direction)
+
+            
+            print "Last Direction: "+self.last_direction
+            print "Target: "+str(self.target)
+            return self.last_direction
+        elif self.tasks[len(self.tasks)-1] != "target":
+            top = len(self.tasks) - 1
+            
+            if self.tasks(top) == "wall_up":
+                #wall encountered is *above* DF
+                #default move left, mod move right
+                self.last_direction = self.wall_climber("up", 4)
+            elif self.tasks(top) == "wall_down":
+                #wall encountered is *below* DF
+                #default move right, mod move left
+                self.last_direction = self.wall_climber("down", 3)
+            elif self.tasks(top) == "wall_right":
+                #wall encountered is *right* of DF
+                #default move up, mod move down
+                self.last_direction = self.wall_climber("right", 1)
+            elif self.tasks(top) == "wall_left":
+                #wall encountered is *left* of DF
+                #default move down, mod move up
+                self.last_direction = self.wall_climber("left", 2)
+            
+            print self.last_direction
+            print self.tasks
+            return self.last_direction
+        else:
+            return self.last_direction
 
     def put_result(self, result):
         self.last_result = result.upper()
