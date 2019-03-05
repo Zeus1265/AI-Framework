@@ -127,13 +127,13 @@ class DecisionFactory:
         if self.last_direction == self.directions[default_movement] and self.last_result == "SUCCESS":
             return wall_direction
         elif self.last_direction == self.directions[default_movement] and self.last_result == "WALL":
-            self.tasks.append("wall_"+self.direction[default_movement])
+            self.tasks.append("wall_"+self.directions[default_movement])
             new_mod = 0
             if (int)(random.random() * 2) == 0:
                 new_mod = -1
             else:
                 new_mod = 1
-            self.wall_climber_modifier.appened(new_mod)
+            self.wall_climber_modifier.append(new_mod)
             return self.directions[self.direction_inverter(default_movement)]
         elif self.last_direction == wall_direction and self.last_result == "WALL":
             return self.directions[default_movement]
