@@ -119,7 +119,12 @@ class DecisionFactory:
         #wall_direction MUST match an entry in self.directions[]
         #default_movement is an index corresponding to a direction in self.directions[]
         #wall_climber_modifier is a stack of modifiers, which correspond to that level's wall_climber
-
+        if self.wall_climber_modifier[len(self.wall_climber_modifier)-1] == 0:
+            if (int)(random.random()*2) == 1:
+                self.wall_climber_modifier[len(self.wall_climber_modifier)-1] = 1
+            else:
+                self.wall_climber_modifier[len(self.wall_climber_modifier)-1] = -1
+            return wall_direction
 
         if self.wall_climber_modifier[len(self.wall_climber_modifier)-1] == -1: #modified case
             default_movement = self.direction_inverter(default_movement)
@@ -128,17 +133,14 @@ class DecisionFactory:
             return wall_direction
         elif self.last_direction == self.directions[default_movement] and self.last_result == "WALL":
             self.tasks.append("wall_"+self.directions[default_movement])
-            new_mod = 0
-            if (int)(random.random() * 2) == 0:
-                new_mod = -1
-            else:
-                new_mod = 1
-            self.wall_climber_modifier.append(new_mod)
+            self.wall_climber_modifier.append(0)
+            print "Tasks: "+str(self.tasks)
             return self.directions[self.direction_inverter(default_movement)]
         elif self.last_direction == wall_direction and self.last_result == "WALL":
             return self.directions[default_movement]
         elif self.last_direction == wall_direction and self.last_result == "SUCCESS":
             print "Task removed by wall_climber alg"
+            print "Tasks: "+str(self.tasks)
             self.tasks.pop()
             self.wall_climber_modifier.pop()
             return wall_direction
@@ -150,6 +152,7 @@ class DecisionFactory:
             if len(self.tasks) == 0:
                 self.tasks.append("target")
                 print "Added \'target\' task"
+                print "Tasks: "+str(self.tasks)
             if self.target_reached:
                 #self.unreachables = []
                 self.target = self.get_target()
@@ -163,15 +166,16 @@ class DecisionFactory:
                 #add in wall movements
                 self.tasks.pop()
                 print "Removed a task"
-                self.wall_climber_modifier.append(1)
+                self.wall_climber_modifier.append(0)
                 self.tasks.append("wall_"+self.last_direction)
                 print "Added a wall task"
+                print "Tasks: "+str(self.tasks)
                 self.target_reached = True
 
             
-            print "Last Direction: "+self.last_direction
-            print "Target: "+str(self.target)
-            print "Tasks: "+str(self.tasks)
+            #print "Last Direction: "+self.last_direction
+            #print "Target: "+str(self.target)
+            #print "Tasks: "+str(self.tasks)
             return self.last_direction
         elif self.tasks[len(self.tasks)-1] != "target":
             top = len(self.tasks) - 1
@@ -193,8 +197,8 @@ class DecisionFactory:
                 #default move down, mod move up
                 self.last_direction = self.wall_climber("left", 2)
             
-            print self.last_direction
-            print "Tasks: "+str(self.tasks)
+            #print self.last_direction
+            #print "Tasks: "+str(self.tasks)
             return self.last_direction
         else:
             return self.last_direction
