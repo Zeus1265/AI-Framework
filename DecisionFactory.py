@@ -18,17 +18,17 @@ class DecisionFactory:
         
         self.map = [[ 1, 1, 1, 1, 1, 1, 1],
                     [ 1, 0, 0, 0, 0, 0, 1],
-                    [ 1, 0, 0, 0, 1, 0, 1],
-                    [ 1, 0, 0, 0, 1, -1, 1],
-                    [ 1, 0, 1, 1, 1, 0, 1],
                     [ 1, 0, 0, 0, 0, 0, 1],
+                    [ 1, 0, 0, 0, 0, 0, 1],
+                    [ 1, 0, 1, 1, 1, 0, 1],
+                    [ 1, 0, 0, -1, 0, 0, 1],
                     [ 1, 1, 1, 1, 1, 1, 1]]
         '''
         self.map = [[-1, -1, -1],
                     [-1,  0, -1],
                     [-1, -1, -1]]
         '''
-        self.location = [3, 3]
+        self.location = [1, 1]
         self.closest_unknown = [[]]
         self.closest_unknown_distance = 99999
         #self.walls_hit = 0
@@ -120,40 +120,42 @@ class DecisionFactory:
         #wall_direction MUST match an entry in self.directions[]
         #default_movement is an index corresponding to a direction in self.directions[]
         #wall_climber_modifier is a stack of modifiers, which correspond to that level's wall_climber
-        if self.wall_climber_modifier[len(self.wall_climber_modifier)-1] == 0:
-            if (int)(random.random()*2) == 1:
-                self.wall_climber_modifier[len(self.wall_climber_modifier)-1] = 1
-            else:
-                self.wall_climber_modifier[len(self.wall_climber_modifier)-1] = -1
-            return wall_direction
-
+	
         if self.wall_climber_modifier[len(self.wall_climber_modifier)-1] == -1: #modified case
             default_movement = self.direction_inverter(default_movement)
         
         if self.last_direction == self.directions[default_movement] and self.last_result == "SUCCESS":
+	    #print "Moved parallel last round, moving in wall direction"
             return wall_direction
         elif self.last_direction == self.directions[default_movement] and self.last_result == "WALL":
             self.tasks.append("wall_"+self.directions[default_movement])
-            self.wall_climber_modifier.append(0)
-            print "Tasks: "+str(self.tasks)
-            return self.directions[self.direction_inverter(default_movement)]
+	    self.wall_climber_modifier.append(0)
+	    #print "Another wall encountered, calling another climb"
+            #print "Tasks: "+str(self.tasks)
+            return self.directions[default_movement]
         elif self.last_direction == wall_direction and self.last_result == "WALL":
+            #print "Headbutted wall, moving parallel next round"
             return self.directions[default_movement]
         elif self.last_direction == wall_direction and self.last_result == "SUCCESS":
-            print "Task removed by wall_climber alg"
-            print "Tasks: "+str(self.tasks)
+	    #print "Wall successfully navigated"
+            #print "Task removed by wall_climber alg"
+            
             self.tasks.pop()
             self.wall_climber_modifier.pop()
-            return wall_direction
+	    #print "Tasks: "+str(self.tasks)
+            return "wait"
         return wall_direction
 
     def get_decision(self, verbose = True):
-
+	if len(self.tasks) >= 5:
+		self.tasks = []
+		self.wall_climber_modifier = []
         if len(self.tasks) == 0 or self.tasks[len(self.tasks) - 1] == "target":
             if len(self.tasks) == 0:
                 self.tasks.append("target")
-                print "Added \'target\' task"
-                print "Tasks: "+str(self.tasks)
+                #print "Added \'target\' task"
+                #print "Tasks: "+str(self.tasks)
+	    	self.target_reached = True
             if self.target_reached:
                 #self.unreachables = []
                 self.target = self.get_target()
@@ -166,12 +168,13 @@ class DecisionFactory:
             else:
                 #add in wall movements
                 self.tasks.pop()
-                print "Removed a task"
+                #print "Removed a task"
                 self.wall_climber_modifier.append(0)
                 self.tasks.append("wall_"+self.last_direction)
-                print "Added a wall task"
-                print "Tasks: "+str(self.tasks)
+                #print "Added a wall task"
+                #print "Tasks: "+str(self.tasks)
                 self.target_reached = True
+		self.unreachables = []
 
             
             #print "Last Direction: "+self.last_direction
