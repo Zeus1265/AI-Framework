@@ -15,19 +15,20 @@ class DecisionFactory:
         self.tasks = [] #stack memory of what instructions to follow
         self.wall_climber_modifier = [] #used by the wall climber algorithm to determine what direction to move in
 
-        '''
+        
         self.map = [[ 1, 1, 1, 1, 1, 1, 1],
                     [ 1, 0, 0, 0, 0, 0, 1],
-                    [ 1, 0, 0, -1, 0, 0, 1],
+                    [ 1, 0, 0, 0, 1, 0, 1],
+                    [ 1, 0, 0, 0, 1, -1, 1],
                     [ 1, 0, 1, 1, 1, 0, 1],
-                    [ 1, 0, 0, 0, 0, 0, 1],
                     [ 1, 0, 0, 0, 0, 0, 1],
                     [ 1, 1, 1, 1, 1, 1, 1]]
         '''
         self.map = [[-1, -1, -1],
                     [-1,  0, -1],
                     [-1, -1, -1]]
-        self.location = [1, 1]
+        '''
+        self.location = [3, 3]
         self.closest_unknown = [[]]
         self.closest_unknown_distance = 99999
         #self.walls_hit = 0

@@ -27,9 +27,9 @@ else:
 
 pause = (int)(1000.0/REFRESH_RATE)
 
-COL = 16
-ROW = 16
-
+COL = 7
+ROW = 7
+"""
 map_t = [[ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
          [ 1, 0, 0, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1],
          [ 1, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1],
@@ -46,9 +46,17 @@ map_t = [[ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
          [ 1, 0, 0, 0, 1, 0, 1, 1, 0, 1, 0, 0, 1, 1, 1, 1],
          [ 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
          [ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]]
+"""
 
+map_t = [[ 1, 1, 1, 1, 1, 1, 1],
+         [ 1, 0, 0, 0, 0, 0, 1],
+         [ 1, 0, 0, 0, 1, 0, 1],
+         [ 1, 0, 0, 0, 1, 2, 1],
+         [ 1, 0, 1, 1, 1, 0, 1],
+         [ 1, 0, 0, 0, 0, 0, 1],
+         [ 1, 1, 1, 1, 1, 1, 1]]
 
-map_t[(int)(random.random() * 14 + 1)][(int)(random.random() * 14 + 1)] = 2
+#map_t[(int)(random.random() * 14 + 1)][(int)(random.random() * 14 + 1)] = 2
 #map_t[0][0] = 2
 TILE_SZ = 32
 
@@ -66,7 +74,7 @@ GREEN = pygame.Color(0, 255, 0, 0)
 #portal = [0, 0]
 
 running = 1
-
+"""
 inWall = True
 while(inWall):
     player_x = (int)(random.random() * 14 + 1)
@@ -74,6 +82,9 @@ while(inWall):
 
     if map_t[player_y][player_x] is not 1:
         inWall = False
+"""
+player_x = 3
+player_y = 3
 
 move_type = 4
 #0: wait
