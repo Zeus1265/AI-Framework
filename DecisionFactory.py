@@ -15,7 +15,7 @@ class DecisionFactory:
         self.tasks = [] #stack memory of what instructions to follow
         self.wall_climber_modifier = [] #used by the wall climber algorithm to determine what direction to move in
 
-        
+        '''
         self.map = [[ 1, 1, 1, 1, 1, 1, 1],
                     [ 1, 0, 0, 0, 0, 0, 1],
                     [ 1, 0, 0, 0, 0, 0, 1],
@@ -27,7 +27,7 @@ class DecisionFactory:
         self.map = [[-1, -1, -1],
                     [-1,  0, -1],
                     [-1, -1, -1]]
-        '''
+
         self.location = [1, 1]
         self.closest_unknown = [[]]
         self.closest_unknown_distance = 99999
@@ -120,10 +120,10 @@ class DecisionFactory:
         #wall_direction MUST match an entry in self.directions[]
         #default_movement is an index corresponding to a direction in self.directions[]
         #wall_climber_modifier is a stack of modifiers, which correspond to that level's wall_climber
-	
+
         if self.wall_climber_modifier[len(self.wall_climber_modifier)-1] == -1: #modified case
             default_movement = self.direction_inverter(default_movement)
-        
+
         if self.last_direction == self.directions[default_movement] and self.last_result == "SUCCESS":
 	    #print "Moved parallel last round, moving in wall direction"
             return wall_direction
@@ -139,7 +139,7 @@ class DecisionFactory:
         elif self.last_direction == wall_direction and self.last_result == "SUCCESS":
 	    #print "Wall successfully navigated"
             #print "Task removed by wall_climber alg"
-            
+
             self.tasks.pop()
             self.wall_climber_modifier.pop()
 	    #print "Tasks: "+str(self.tasks)
@@ -147,9 +147,14 @@ class DecisionFactory:
         return wall_direction
 
     def get_decision(self, verbose = True):
-	if len(self.tasks) >= 5:
-		self.tasks = []
-		self.wall_climber_modifier = []
+        if len(self.tasks) >= 5:
+            self.tasks = []
+            self.wall_climber_modifier = []
+            self.map = [[-1, -1, -1],
+                        [-1,  0, -1],
+                        [-1, -1, -1]]
+            self.location = [1, 1]
+            print "reset map"
         if len(self.tasks) == 0 or self.tasks[len(self.tasks) - 1] == "target":
             if len(self.tasks) == 0:
                 self.tasks.append("target")
@@ -162,7 +167,7 @@ class DecisionFactory:
                 self.target_reached = False
 
 
-            if self.target[0] != -1 and self.target[1] != -1:               
+            if self.target[0] != -1 and self.target[1] != -1:
                 dir = self.dir_chooser(self.location, self.target)
                 self.last_direction = self.directions[dir]
             else:
@@ -176,14 +181,14 @@ class DecisionFactory:
                 self.target_reached = True
 		self.unreachables = []
 
-            
+
             #print "Last Direction: "+self.last_direction
             #print "Target: "+str(self.target)
             #print "Tasks: "+str(self.tasks)
             return self.last_direction
         elif self.tasks[len(self.tasks)-1] != "target":
             top = len(self.tasks) - 1
-            
+
             if self.tasks[top] == "wall_up":
                 #wall encountered is *above* DF
                 #default move left, mod move right
@@ -200,7 +205,7 @@ class DecisionFactory:
                 #wall encountered is *left* of DF
                 #default move down, mod move up
                 self.last_direction = self.wall_climber("left", 2)
-            
+
             #print self.last_direction
             #print "Tasks: "+str(self.tasks)
             return self.last_direction
