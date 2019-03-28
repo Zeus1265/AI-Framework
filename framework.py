@@ -6,6 +6,7 @@ Authors: Sean McGee and Preston Mouw
 import pygame
 import random
 import DecisionFactory
+import mapGen
 
 pygame.init()
 #asks user if df will play or human will play
@@ -27,38 +28,15 @@ else:
 
 pause = (int)(1000.0/REFRESH_RATE)
 
-COL = 16
-ROW = 16
+COL = 8
+ROW = 12
 
-map_t = [[ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-         [ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-         [ 1, 0, 0, 0, 1, 0, 1, 1, 1, 1, 0, 1, 0, 0, 1, 1],
-         [ 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1],
-         [ 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 1, 0, 1, 1],
-         [ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1],
-         [ 1, 0, 0, 1, 0, 1, 1, 0, 1, 1, 0, 0, 1, 0, 1, 1],
-         [ 1, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1],
-         [ 1, 0, 0, 1, 0, 1, 0, 2, 0, 1, 0, 0, 0, 0, 1, 1],
-         [ 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 1, 0, 0, 1, 1],
-         [ 1, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0, 1, 0, 0, 1, 1],
-         [ 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1],
-         [ 1, 0, 0, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1],
-         [ 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 1, 1, 1],
-         [ 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1],
-         [ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]]
+(map_t, player_init) = mapGen.type0(COL, ROW)  
 
-'''
-map_t = [[ 1, 1, 1, 1, 1, 1, 1],
-         [ 1, 0, 0, 0, 0, 0, 1],
-         [ 1, 0, 0, 0, 1, 0, 1],
-         [ 1, 0, 0, 0, 1, 2, 1],
-         [ 1, 0, 0, 0, 1, 0, 1],
-         [ 1, 0, 0, 0, 0, 0, 1],
-         [ 1, 1, 1, 1, 1, 1, 1]]
-'''
-#map_t[(int)(random.random() * 14 + 1)][(int)(random.random() * 14 + 1)] = 2
-#map_t[0][0] = 2
-TILE_SZ = 32
+player_x = player_init[0]
+player_y = player_init[1]
+
+TILE_SZ = 24
 
 size = (700, 600)
 screen = pygame.display.set_mode(size)
@@ -74,19 +52,6 @@ GREEN = pygame.Color(0, 255, 0, 0)
 #portal = [0, 0]
 
 running = 1
-'''
-inWall = True
-while(inWall):
-    player_x = (int)(random.random() * 14 + 1)
-    player_y = (int)(random.random() * 14 + 1)
-
-    if map_t[player_y][player_x] is not 1:
-        inWall = False
-'''
-player_x = 13
-player_y = 2
-
-player_init = (13, 2)
 
 round2 = False
 

@@ -10,6 +10,10 @@ class DecisionFactory:
             self.dir = direction
             #self.phase = []
 
+        def __str__(self):
+            ret = '[Direction: ' + self.dir + ', count: {}]'.format(self.count) 
+            return ret
+
 
     def __init__(self, name ='Bad man'):
         self.name = name
@@ -76,11 +80,12 @@ class DecisionFactory:
 
     def get_decision(self, verbose = True):
         if self.follow_instructions:
+            #print('Current instruction: ' + str(self.backtrack_stack[0]))
             self.last_direction = self.backtrack_stack[0].dir
             self.backtrack_stack[0].count -= 1
             if self.backtrack_stack[0].count == 0:
                 self.backtrack_stack.pop(0)
-
+            
             return self.last_direction
 
 
@@ -129,7 +134,7 @@ class DecisionFactory:
     def put_result(self, result):
         self.last_result = result.upper()
 
-        if self.last_result == 'SUCCESS' or self.last_result == 'PORTAL':
+        if (self.last_result == 'SUCCESS' or self.last_result == 'PORTAL') and not self.follow_instructions:
             if len(self.backtrack_stack) == 0:
                 self.backtrack_stack.append(self.Backtrack_Obj(self.last_direction))
             elif self.backtrack_stack[-1].dir == self.last_direction:
@@ -142,6 +147,11 @@ class DecisionFactory:
                 self.backtrack_stack.append(self.Backtrack_Obj(self.last_direction))
 
         if self.last_result == 'PORTAL':
+            '''
+            if not self.follow_instructions:
+                for i in self.backtrack_stack:
+                    print(i)
+            '''
             self.follow_instructions = True
 
         x = self.location[0]
