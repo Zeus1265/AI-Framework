@@ -86,6 +86,10 @@ while(inWall):
 player_x = 13
 player_y = 2
 
+player_init = (13, 2)
+
+round2 = False
+
 move_type = 4
 #0: wait
 #1: up
@@ -139,6 +143,8 @@ while(running):
         if map_t[player_y][player_x] is 1:
             player_x += 1
             result = "Wall"
+        elif map_t[player_y][player_x] == 2:
+            result = 'Portal'
         else:
             result = "Success"
     elif move_type is 2:
@@ -147,6 +153,8 @@ while(running):
         if map_t[player_y][player_x] is 1:
             player_x -= 1
             result = "Wall"
+        elif map_t[player_y][player_x] == 2:
+            result = 'Portal'
         else:
             result = "Success"
     elif move_type is 4:
@@ -155,6 +163,8 @@ while(running):
         if map_t[player_y][player_x] is 1:
             player_y += 1
             result = "Wall"
+        elif map_t[player_y][player_x] == 2:
+            result = 'Portal'
         else:
             result = "Success"
     elif move_type is 3:
@@ -163,6 +173,8 @@ while(running):
         if map_t[player_y][player_x] is 1:
             player_y -= 1
             result = "Wall"
+        elif map_t[player_y][player_x] == 2:
+            result = 'Portal'
         else:
             result = "Success"
     else:
@@ -174,7 +186,7 @@ while(running):
         #print(result)
 		
     #timer.tick(REFRESH_RATE)
-    timer.tick(30)
+    timer.tick(60)
     for r in range(0, ROW):
         for c in range(0, COL):
             if map_t[r][c] is 1:
@@ -192,9 +204,16 @@ while(running):
     pygame.display.update()
 
     if portal[0] is player_y and portal[1] is player_x:
-        pygame.quit()
-        print(moves)
-        running = 0
+        if round2:
+            pygame.quit()
+            running = 0
+            print('Round 2 moves: {}'.format(moves))
+        else:
+            round2 = True
+            player_x = player_init[0]
+            player_y = player_init[1]
+            print('Round 1 moves: {}'.format(moves))
+            moves = 0
 
 
 '''

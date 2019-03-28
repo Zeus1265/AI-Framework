@@ -31,6 +31,8 @@ class DecisionFactory:
                 'left': 'right',
                 'right': 'left' }
 
+        self.follow_instructions = False
+
     def dirToInd(self, dir):
         if dir == 'up':
             return 1
@@ -73,6 +75,15 @@ class DecisionFactory:
             
 
     def get_decision(self, verbose = True):
+        if self.follow_instructions:
+            self.last_direction = self.backtrack_stack[0].dir
+            self.backtrack_stack[0].count -= 1
+            if self.backtrack_stack[0].count == 0:
+                self.backtrack_stack.pop(0)
+
+            return self.last_direction
+
+
         if len(self.backtrack_stack) == 0:
             rel_x = self.location[0]
             rel_y = self.location[1]
@@ -90,9 +101,9 @@ class DecisionFactory:
                     mod_x = 1
                 elif index == 4:
                     mod_x = -1
-                print 'Mod_X: {}'.format(mod_x)
-                print 'Mod_Y: {}'.format(mod_y)
-                print 'Map shape: {}x{}'.format(len(self.map[0]), len(self.map))
+                #print 'Mod_X: {}'.format(mod_x)
+                #print 'Mod_Y: {}'.format(mod_y)
+                #print 'Map shape: {}x{}'.format(len(self.map[0]), len(self.map))
                 if self.map[rel_y+mod_y][rel_x+mod_x] == -1:
                     break
 
@@ -112,13 +123,13 @@ class DecisionFactory:
 
         elif self.last_result == 'WALL':
             self.last_direction = self.backtrack()
-        print self.last_direction
+        #print self.last_direction
         return self.last_direction
 
     def put_result(self, result):
         self.last_result = result.upper()
 
-        if self.last_result == 'SUCCESS':
+        if self.last_result == 'SUCCESS' or self.last_result == 'PORTAL':
             if len(self.backtrack_stack) == 0:
                 self.backtrack_stack.append(self.Backtrack_Obj(self.last_direction))
             elif self.backtrack_stack[-1].dir == self.last_direction:
@@ -129,6 +140,9 @@ class DecisionFactory:
                     self.backtrack_stack.pop()
             else:
                 self.backtrack_stack.append(self.Backtrack_Obj(self.last_direction))
+
+        if self.last_result == 'PORTAL':
+            self.follow_instructions = True
 
         x = self.location[0]
         y = self.location[1]
@@ -186,7 +200,8 @@ class DecisionFactory:
                 for i in range(0, len(self.map)):
                     self.map[i].append(-1)
 
-
+        '''
         for i in range(0, len(self.map)):
             print self.map[i]
         print "AI Relative location: " + str(self.location)
+        '''
