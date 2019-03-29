@@ -7,6 +7,43 @@ def mapPrint(map):
     for i in range(len(map)):
         print(map[i])
 
+def mapToFile(genMap, player_init, fileName):
+    f = open(fileName, 'w')
+    f.write(str(player_init[0]) + ' ' + str(player_init[1]) + '\n')
+    for row in genMap:
+        f.write(str(row)+'\n')
+
+def fileToMap(fileName):
+    f = open(fileName, 'r')
+    string_f = f.read()
+    map_flag = True
+    val = 'x'
+    player_x = 0
+    player_y = 0
+    genMap = []
+    row = -1
+    for i in range(len(string_f)):
+        if map_flag:
+            if string_f[i] == '\n':
+                map_flag = False
+            elif string_f[i] == ' ':
+                val = 'y'
+            else:
+                if val == 'x':
+                    player_x *= 10
+                    player_x += (int)(string_f[i])
+                else:
+                    player_y *= 10
+                    player_y += (int)(string_f[i])
+        else:
+            if string_f[i] == '[':
+                genMap.append([])
+                row += 1
+            if (string_f[i] == '1') or (string_f[i] == '0') or (string_f[i] == '2'):
+                genMap[row].append((int)(string_f[i]))
+
+    return genMap, (player_x, player_y)
+
 def type0(width, height):
     #Type 0 is completely empty with 4 exterior walls and a portal
 

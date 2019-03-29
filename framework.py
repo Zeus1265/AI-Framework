@@ -8,6 +8,8 @@ import random
 import DecisionFactory
 import mapGen
 
+USE_LAST_MAP = False
+
 pygame.init()
 #asks user if df will play or human will play
 
@@ -28,15 +30,20 @@ else:
 
 pause = (int)(1000.0/REFRESH_RATE)
 
-COL = 24
-ROW = 32
+COL = 100
+ROW = 150
 
-(map_t, player_init) = mapGen.type2(COL, ROW, 0.3)  
+if not USE_LAST_MAP:
+    (map_t, player_init) = mapGen.type2(COL, ROW, 0.15)
+
+    mapGen.mapToFile(map_t, player_init, 'last_used.map')
+else:
+    (map_t, player_init) = mapGen.fileToMap('last_used.map')
 
 player_x = player_init[0]
 player_y = player_init[1]
 
-TILE_SZ = 24
+TILE_SZ = 6
 
 size = (TILE_SZ*(ROW+1), TILE_SZ*(COL+1))
 screen = pygame.display.set_mode(size)
@@ -44,7 +51,9 @@ screen = pygame.display.set_mode(size)
 pygame.display.set_caption("Preston-ta-Sean Framework")
 
 BLUE = pygame.Color(0, 0, 255, 0)
+LIGHT_BLUE = pygame.Color(125, 125, 255)
 RED = pygame.Color(255, 0, 0, 0)
+LIGHT_RED = pygame.Color(255, 50, 175)
 GREY = pygame.Color(90, 90, 90, 0)
 WHITE = pygame.Color(255, 255, 255, 0)
 GREEN = pygame.Color(0, 255, 0, 0)
@@ -64,6 +73,7 @@ move_type = 4
 
 timer = pygame.time.Clock()
 while(running):
+    timer.tick(60)
     events = pygame.event.get()
     for event in events:
         if event.type is pygame.QUIT:
@@ -105,42 +115,50 @@ while(running):
     if move_type is 1:
         moves += 1
         player_x -= 1
-        if map_t[player_y][player_x] is 1:
+        if (int)(map_t[player_y][player_x]) == 1:
+            map_t[player_y][player_x] = 1.1
             player_x += 1
             result = "Wall"
-        elif map_t[player_y][player_x] == 2:
+        elif (int)(map_t[player_y][player_x]) == 2:
             result = 'Portal'
         else:
+            map_t[player_y][player_x] = 0.1
             result = "Success"
     elif move_type is 2:
         moves += 1
         player_x += 1
-        if map_t[player_y][player_x] is 1:
+        if (int)(map_t[player_y][player_x]) == 1:
+            map_t[player_y][player_x] = 1.1
             player_x -= 1
             result = "Wall"
-        elif map_t[player_y][player_x] == 2:
+        elif (int)(map_t[player_y][player_x]) == 2:
             result = 'Portal'
         else:
+            map_t[player_y][player_x] = 0.1
             result = "Success"
     elif move_type is 4:
         moves += 1
         player_y -= 1
-        if map_t[player_y][player_x] is 1:
+        if (int)(map_t[player_y][player_x]) == 1:
+            map_t[player_y][player_x] = 1.1
             player_y += 1
             result = "Wall"
-        elif map_t[player_y][player_x] == 2:
+        elif (int)(map_t[player_y][player_x]) == 2:
             result = 'Portal'
         else:
+            map_t[player_y][player_x] = 0.1
             result = "Success"
     elif move_type is 3:
         moves += 1
         player_y += 1
-        if map_t[player_y][player_x] is 1:
+        if (int)(map_t[player_y][player_x]) == 1:
+            map_t[player_y][player_x] = 1.1
             player_y -= 1
             result = "Wall"
         elif map_t[player_y][player_x] == 2:
             result = 'Portal'
         else:
+            map_t[player_y][player_x] = 0.1
             result = "Success"
     else:
 		result = "Success"
@@ -151,14 +169,18 @@ while(running):
         #print(result)
 		
     #timer.tick(REFRESH_RATE)
-    timer.tick(60)
+
     for r in range(0, ROW):
         for c in range(0, COL):
-            if map_t[r][c] is 1:
+            if map_t[r][c] == 1:
                 color = RED
-            elif map_t[r][c] is 0:
+            elif map_t[r][c] == 1.1:
+                color = LIGHT_RED
+            elif map_t[r][c] == 0:
                 color = BLUE
-            elif map_t[r][c] is 2:
+            elif map_t[r][c] == 0.1:
+                color = LIGHT_BLUE
+            elif map_t[r][c] == 2:
                 color = WHITE
                 portal = [r, c]
             #print('Drawing rectangle at {}, {}'.format(r, c))

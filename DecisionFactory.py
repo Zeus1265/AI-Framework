@@ -88,20 +88,26 @@ class DecisionFactory:
             
             return self.last_direction
 
-
+        for x in self.backtrack_stack:
+            print(x)
         if len(self.backtrack_stack) == 0:
+            print('Stack empty')
             rel_x = self.location[0]
             rel_y = self.location[1]
             while True:
                 r = (int)(random.random()*4)+1
-                self.last_direction = self.directions[r]
+                tmp_dir = self.directions[r]
+                while tmp_dir == self.last_direction:
+                    r = (int)(random.random()*4)+1
+                    tmp_dir = self.directions[r]
+                self.last_direction = tmp_dir
                 index = self.dirToInd(self.last_direction)
                 mod_x = 0
                 mod_y = 0
                 if index == 1:
-                    mod_y = 1
-                elif index == 2:
                     mod_y = -1
+                elif index == 2:
+                    mod_y = 1
                 elif index == 3:
                     mod_x = 1
                 elif index == 4:
@@ -110,8 +116,8 @@ class DecisionFactory:
                 #print 'Mod_Y: {}'.format(mod_y)
                 #print 'Map shape: {}x{}'.format(len(self.map[0]), len(self.map))
                 if self.map[rel_y+mod_y][rel_x+mod_x] == -1:
+                    print(self.last_direction)
                     break
-
         elif self.last_result == 'SUCCESS':
             index = self.dirToInd(self.last_direction)
             if index == 1:
@@ -125,10 +131,9 @@ class DecisionFactory:
 
             if self.map[map_loc[1]][map_loc[0]] != -1:
                 self.last_direction = self.backtrack()
-
         elif self.last_result == 'WALL':
             self.last_direction = self.backtrack()
-        #print self.last_direction
+        print self.last_direction
         return self.last_direction
 
     def put_result(self, result):
