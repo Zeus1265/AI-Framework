@@ -76,9 +76,71 @@ def type2(width, height, density):
     portal_x = (int)(random.random()*(width-2)+1)
     portal_y = (int)(random.random()*(height-2)+1)
 
-    
+    internal_w = width - 2
+    internal_h = height - 2
+    root = [0, 0] #where chains are started
+    genMap[portal_y][portal_x] = 0
     while density_calc(genMap, width, height) < density:
-        direction = (int)(random.random()*4)
-        break
+        #print('Current density: {}'.format(density_calc(genMap, width, height)))
+        while True:
+            row = (int)(random.random()*internal_h)+1
+            col = (int)(random.random()*internal_w)+1
 
-    return 0
+            if genMap[row][col] == 0:
+                root[0] = col
+                root[1] = row
+                break
+        direction = (int)(random.random()*4)
+        #print('Root point: {}'.format(root))
+        #print('Direction {}'.format(direction))
+        #print('Current map:')
+        #for i in genMap:
+        #    print(i)
+        if direction == 0:
+            #up
+            max_dist = root[1] 
+            length = (int)(random.random()*max_dist)+1
+            for i in range(length):
+                try:
+                    genMap[root[1]-i][root[0]] = 0
+                except IndexError:
+                    print('Index Error at [{},{}] in direction: {} with chain length {}'.format(root[1],root[0],direction,length))
+                    raise
+        elif direction == 1:
+            #down
+            max_dist = internal_h - root[1] + 1
+            length = (int)(random.random()*max_dist)+1
+            for i in range(length):
+                try:
+                    genMap[root[1]+i][root[0]] = 0
+                except IndexError:
+                    print('Index Error at [{},{}] in direction: {} with chain length {}'.format(root[1],root[0],direction,length))
+        elif direction == 2:
+            #pos x
+            max_dist = internal_w - root[0] + 1
+            length = (int)(random.random()*max_dist)+1
+            for i in range(length):
+                try:
+                    genMap[root[1]][root[0]+i] = 0
+                except IndexError:
+                    print('Index Error at [{},{}] in direction: {} with chain length {}'.format(root[1],root[0],direction,length))
+        else:
+            #neg x
+            max_dist = root[0]
+            length = (int)(random.random()*max_dist)+1
+            for i in range(length):
+                try:
+                    genMap[root[1]][root[0]-i] = 0
+                except IndexError:
+                    print('Index Error at [{},{}] in direction: {} with chain length {}'.format(root[1],root[0],direction,length))
+
+    player_x = 0
+    player_y = 0
+    while True:
+        player_x = (int)(random.random()*internal_w)+1
+        player_y = (int)(random.random()*internal_h)+1
+        if genMap[player_y][player_x] == 0:
+            break
+
+    genMap[portal_y][portal_x] = 2
+    return genMap, (player_x, player_y)

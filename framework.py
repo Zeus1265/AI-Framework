@@ -28,17 +28,17 @@ else:
 
 pause = (int)(1000.0/REFRESH_RATE)
 
-COL = 8
-ROW = 12
+COL = 24
+ROW = 32
 
-(map_t, player_init) = mapGen.type0(COL, ROW)  
+(map_t, player_init) = mapGen.type2(COL, ROW, 0.3)  
 
 player_x = player_init[0]
 player_y = player_init[1]
 
 TILE_SZ = 24
 
-size = (700, 600)
+size = (TILE_SZ*(ROW+1), TILE_SZ*(COL+1))
 screen = pygame.display.set_mode(size)
 
 pygame.display.set_caption("Preston-ta-Sean Framework")
