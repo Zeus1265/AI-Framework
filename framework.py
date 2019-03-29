@@ -30,11 +30,11 @@ else:
 
 pause = (int)(1000.0/REFRESH_RATE)
 
-COL = 100
-ROW = 150
+COL = 20
+ROW = 30
 
 if not USE_LAST_MAP:
-    (map_t, player_init) = mapGen.type2(COL, ROW, 0.15)
+    (map_t, player_init) = mapGen.type2(COL, ROW, 0.4)
 
     mapGen.mapToFile(map_t, player_init, 'last_used.map')
 else:
@@ -43,7 +43,7 @@ else:
 player_x = player_init[0]
 player_y = player_init[1]
 
-TILE_SZ = 6
+TILE_SZ = 32
 
 size = (TILE_SZ*(ROW+1), TILE_SZ*(COL+1))
 screen = pygame.display.set_mode(size)
@@ -71,9 +71,26 @@ move_type = 4
 #3: right
 #4: left
 
+for r in range(0, ROW):
+    for c in range(0, COL):
+        if map_t[r][c] == 1:
+            color = RED
+        elif map_t[r][c] == 1.1:
+            color = LIGHT_RED
+        elif map_t[r][c] == 0:
+            color = BLUE
+        elif map_t[r][c] == 0.1:
+            color = LIGHT_BLUE
+        elif map_t[r][c] == 2:
+            color = WHITE
+        pygame.draw.rect(screen, color, pygame.Rect(r*TILE_SZ, c*TILE_SZ, TILE_SZ, TILE_SZ), 0)
+        pygame.draw.rect(screen, GREY, pygame.Rect(r*TILE_SZ, c*TILE_SZ, TILE_SZ, TILE_SZ), 1)
+pygame.draw.rect(screen, GREEN, pygame.Rect(player_y * TILE_SZ, player_x * TILE_SZ, TILE_SZ, TILE_SZ), 0)
+
+
 timer = pygame.time.Clock()
 while(running):
-    timer.tick(60)
+    timer.tick(100)
     events = pygame.event.get()
     for event in events:
         if event.type is pygame.QUIT:
@@ -110,6 +127,8 @@ while(running):
             move_type = 3
         elif d is 'left':
             move_type = 4
+    
+    player_prev = [player_x, player_y]
 
     #print(move_type)
     if move_type is 1:
@@ -117,6 +136,7 @@ while(running):
         player_x -= 1
         if (int)(map_t[player_y][player_x]) == 1:
             map_t[player_y][player_x] = 1.1
+            player_prev[0] = player_x
             player_x += 1
             result = "Wall"
         elif (int)(map_t[player_y][player_x]) == 2:
@@ -128,6 +148,7 @@ while(running):
         moves += 1
         player_x += 1
         if (int)(map_t[player_y][player_x]) == 1:
+            player_prev[0] = player_x
             map_t[player_y][player_x] = 1.1
             player_x -= 1
             result = "Wall"
@@ -140,6 +161,7 @@ while(running):
         moves += 1
         player_y -= 1
         if (int)(map_t[player_y][player_x]) == 1:
+            player_prev[1] = player_y
             map_t[player_y][player_x] = 1.1
             player_y += 1
             result = "Wall"
@@ -152,6 +174,7 @@ while(running):
         moves += 1
         player_y += 1
         if (int)(map_t[player_y][player_x]) == 1:
+            player_prev[1] = player_y
             map_t[player_y][player_x] = 1.1
             player_y -= 1
             result = "Wall"
@@ -165,32 +188,30 @@ while(running):
 
     if human_input is 0:
         DF.put_result(result)
-        moves += 1
+        #moves += 1
         #print(result)
 		
     #timer.tick(REFRESH_RATE)
 
-    for r in range(0, ROW):
-        for c in range(0, COL):
-            if map_t[r][c] == 1:
-                color = RED
-            elif map_t[r][c] == 1.1:
-                color = LIGHT_RED
-            elif map_t[r][c] == 0:
-                color = BLUE
-            elif map_t[r][c] == 0.1:
-                color = LIGHT_BLUE
-            elif map_t[r][c] == 2:
-                color = WHITE
-                portal = [r, c]
-            #print('Drawing rectangle at {}, {}'.format(r, c))
-            pygame.draw.rect(screen, color, pygame.Rect(r*TILE_SZ, c*TILE_SZ, TILE_SZ, TILE_SZ), 0)
-            pygame.draw.rect(screen, GREY, pygame.Rect(r*TILE_SZ, c*TILE_SZ, TILE_SZ, TILE_SZ), 1)
+    r = player_prev[1]
+    c = player_prev[0]
+    if map_t[r][c] == 1:
+        color = RED
+    elif map_t[r][c] == 1.1:
+        color = LIGHT_RED
+    elif map_t[r][c] == 0:
+        color = BLUE
+    elif map_t[r][c] == 0.1:
+        color = LIGHT_BLUE
+    elif map_t[r][c] == 2:
+        color = WHITE
+    pygame.draw.rect(screen, color, pygame.Rect(r*TILE_SZ, c*TILE_SZ, TILE_SZ, TILE_SZ), 0)
+    pygame.draw.rect(screen, GREY, pygame.Rect(r*TILE_SZ, c*TILE_SZ, TILE_SZ, TILE_SZ), 1)
     pygame.draw.rect(screen, GREEN, pygame.Rect(player_y * TILE_SZ, player_x * TILE_SZ, TILE_SZ, TILE_SZ), 0)
     #print('portal at {}'.format(portal))
     pygame.display.update()
 
-    if portal[0] is player_y and portal[1] is player_x:
+    if map_t[player_y][player_x] == 2:
         if round2:
             pygame.quit()
             running = 0
