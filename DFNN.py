@@ -47,5 +47,13 @@ class DFNN:
         for x in self.layers:
             inputs = x * inputs
             inputs = sp.special.expit(inputs)
-
-        return inputs
+        #print inputs
+        (n, m) = inputs.shape
+        max = 0
+        maxi = (float)(inputs[0])
+        for i in range(1, n):
+            if maxi < (float)(inputs[i, 0]):
+                maxi = (float)(inputs[i, 0])
+                max = i
+        #print max+1
+        return max+1

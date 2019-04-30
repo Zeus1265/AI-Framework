@@ -5,12 +5,16 @@ Authors: Sean McGee and Preston Mouw
 '''
 import pygame
 import random
+import DFNN
 import DecisionFactory as DecisionFactory
 import mapGen
 
 def run_maze(df, m, GRAPHICS=False):
     USE_LAST_MAP = False
     #GRAPHICS = False
+
+    previous_moves = ['wait', 'wait', 'wait']
+    previous_results = ['success', 'success', 'success']
 
     #random.seed(3000)
 
@@ -108,10 +112,12 @@ def run_maze(df, m, GRAPHICS=False):
                 pygame.draw.rect(screen, GREY, pygame.Rect(r*TILE_SZ, c*TILE_SZ, TILE_SZ, TILE_SZ), 1)
         pygame.draw.rect(screen, GREEN, pygame.Rect(player_y * TILE_SZ, player_x * TILE_SZ, TILE_SZ, TILE_SZ), 0)
 
-
-    #timer = pygame.time.Clock()
+    timer = None
+    if GRAPHICS:
+        timer = pygame.time.Clock()
     while(running):
-        #timer.tick(90)
+        if GRAPHICS:
+            timer.tick(10)
         events = pygame.event.get()
         for event in events:
             if event.type is pygame.QUIT:
@@ -138,6 +144,8 @@ def run_maze(df, m, GRAPHICS=False):
                     move_type = 0
         else:
             d = DF.get_decision()
+            previous_moves.append(d)
+            previous_moves.pop(0)
             if d is 'wait':
                 move_type = 0
             elif d is 'up':
@@ -209,6 +217,8 @@ def run_maze(df, m, GRAPHICS=False):
 
         if human_input is 0:
             DF.put_result(result)
+            previous_results.append(result)
+            previous_results.pop(0)
             #moves += 1
             #print(result)
 
@@ -247,13 +257,26 @@ def run_maze(df, m, GRAPHICS=False):
             running = 0
             print('Round 1 moves: {}'.format(moves))
 
+        KILL = True
+
+        for x in range(1, len(previous_moves)):
+            KILL = KILL and (previous_moves[0] == previous_moves[x])
+
+        for x in previous_results:
+            KILL = KILL and (x == 'Wall')
+
+        if KILL:
+            print 'AI stuck, quitting'
+            moves = float('Inf')
+            running = 0
     return moves
 
 
-DF = DecisionFactory.DecisionFactory('Test man')
-test_map = mapGen.type2(10, 20, .3)
+nn = DFNN.DFNN(2, [8, 4], rando = True)
+DF = DecisionFactory.DecisionFactory(nn, 'Test man')
+test_map = mapGen.type2(15, 20, .3)
 
-run_maze(DF, test_map, GRAPHICS=False)
+run_maze(DF, test_map, GRAPHICS=True)
 
 '''
 Change log
