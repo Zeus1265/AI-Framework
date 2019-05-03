@@ -59,7 +59,7 @@ class DecisionFactory:
         #print self.directions[result]
         self.last_direction = self.directions[result]
 
-        print self.last_direction
+        #print self.last_direction
         return self.last_direction
 
     def put_result(self, result):

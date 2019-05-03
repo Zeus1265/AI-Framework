@@ -15,7 +15,7 @@ class DFNN:
             layers = 1
 
         self.num_layers = layers
-
+        self.NpL = NpL
         #NpL is nodes per layer
         #   NpL is a list of int
         
@@ -43,7 +43,7 @@ class DFNN:
 
     def compute(self, inputs):
         #imputs should be a size 10 column vector
-        inputs = sp.special.expit(inputs)
+        #inputs = sp.special.expit(inputs)
         for x in self.layers:
             inputs = x * inputs
             inputs = sp.special.expit(inputs)
@@ -57,3 +57,21 @@ class DFNN:
                 max = i
         #print max+1
         return max+1
+
+    def replicate(self):
+        #no NpL change
+        #no # of layer changes either
+        #do that later
+        #literally only change values
+        new_nn = DFNN(self.num_layers, self.NpL, rando=False)
+        for i in range(new_nn.num_layers):
+            (n, m) = new_nn.layers[i].shape
+            for j in range(n):
+                for k in range(m):
+                    chance = random.random()
+                    if chance < 0.95:
+                        new_nn.layers[i][j, k] = float(self.layers[i][j, k])
+                    else:
+                        variance = float(self.layers[i][j, k]) * .5
+                        new_nn.layers[i][j,k] = random.random() * float(self.layers[i][j, k]) + variance
+        return new_nn

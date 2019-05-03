@@ -95,7 +95,9 @@ def density_calc(map, width, height):
                 sum += 1
     A = width * height * 1.
 
-    return sum / A
+    d = sum / A
+    print 'Current density {}'.format(d)
+    return d
 
 def type2(width, height, density):
     #Type 2 is a maze-like
@@ -117,7 +119,8 @@ def type2(width, height, density):
     internal_h = height - 2
     root = [0, 0] #where chains are started
     genMap[portal_y][portal_x] = 0
-    while density_calc(genMap, width, height) < density:
+    open_space = 1
+    while (open_space*1./Area) < density:
         #print('Current density: {}'.format(density_calc(genMap, width, height)))
         while True:
             row = (int)(random.random()*internal_h)+1
@@ -139,6 +142,8 @@ def type2(width, height, density):
             length = (int)(random.random()*max_dist)+1
             for i in range(length):
                 try:
+                    if genMap[root[1]-i][root[0]] == 1:
+                        open_space += 1
                     genMap[root[1]-i][root[0]] = 0
                 except IndexError:
                     print('Index Error at [{},{}] in direction: {} with chain length {}'.format(root[1],root[0],direction,length))
@@ -149,6 +154,8 @@ def type2(width, height, density):
             length = (int)(random.random()*max_dist)+1
             for i in range(length):
                 try:
+                    if genMap[root[1]+i][root[0]] == 1:
+                        open_space += 1
                     genMap[root[1]+i][root[0]] = 0
                 except IndexError:
                     print('Index Error at [{},{}] in direction: {} with chain length {}'.format(root[1],root[0],direction,length))
@@ -158,6 +165,8 @@ def type2(width, height, density):
             length = (int)(random.random()*max_dist)+1
             for i in range(length):
                 try:
+                    if genMap[root[1]][root[0]+1] == 1:
+                        open_space += 1
                     genMap[root[1]][root[0]+i] = 0
                 except IndexError:
                     print('Index Error at [{},{}] in direction: {} with chain length {}'.format(root[1],root[0],direction,length))
@@ -167,10 +176,13 @@ def type2(width, height, density):
             length = (int)(random.random()*max_dist)+1
             for i in range(length):
                 try:
+                    if genMap[root[1]][root[0]-i] == 1:
+                        open_space += 1
                     genMap[root[1]][root[0]-i] = 0
                 except IndexError:
                     print('Index Error at [{},{}] in direction: {} with chain length {}'.format(root[1],root[0],direction,length))
 
+        #print 'Current density: {}'.format(open_space/Area)
     player_x = 0
     player_y = 0
     while True:

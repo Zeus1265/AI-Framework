@@ -17,7 +17,6 @@ def run_maze(df, m, GRAPHICS=False):
     previous_results = ['success', 'success', 'success']
 
     #random.seed(3000)
-
     pygame.init()
     #asks user if df will play or human will play
 
@@ -39,6 +38,9 @@ def run_maze(df, m, GRAPHICS=False):
 
     ROW = len(map_t)
     COL = len(map_t[0])
+
+    max_moves = ROW*COL+50
+
     player_init = m[1]
 
     pause = (int)(1000.0/REFRESH_RATE)
@@ -255,7 +257,7 @@ def run_maze(df, m, GRAPHICS=False):
             if GRAPHICS:
                 pygame.quit()
             running = 0
-            print('Round 1 moves: {}'.format(moves))
+            #print('Round 1 moves: {}'.format(moves))
 
         KILL = True
 
@@ -265,18 +267,13 @@ def run_maze(df, m, GRAPHICS=False):
         for x in previous_results:
             KILL = KILL and (x == 'Wall')
 
-        if KILL:
-            print 'AI stuck, quitting'
+        if KILL or moves > max_moves:
+            #print 'AI stuck, quitting'
             moves = float('Inf')
             running = 0
+    if GRAPHICS:
+        pygame.quit()
     return moves
-
-
-nn = DFNN.DFNN(2, [8, 4], rando = True)
-DF = DecisionFactory.DecisionFactory(nn, 'Test man')
-test_map = mapGen.type2(15, 20, .3)
-
-run_maze(DF, test_map, GRAPHICS=True)
 
 '''
 Change log
