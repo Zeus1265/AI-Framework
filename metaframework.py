@@ -5,28 +5,33 @@ import mapGen
 
 import math
 
+NUM_DF = 250
+NUM_GEN = 1000
+NUM_MAP = 100
+
 factories = []
 
-for x in range(50):
-    nn = DFNN.DFNN(10, [20, 20, 20, 30, 30, 20, 20, 20, 15, 4], rando=True)
+for x in range(NUM_DF):
+    nn = DFNN.DFNN(4, [20, 15, 10, 4], rando=True)
     factories.append(DecisionFactory.DecisionFactory(nn, 'Reproduction machine')) 
 
-for x in range(1000):
-    maps = []
+maps = []
+for l in range(NUM_MAP):
+    map_combo = mapGen.type2(20,20,.4)
+    maps.append(map_combo)
+
+for x in range(NUM_GEN):
     move_totals = []
     maze_success = 0
-    for l in range(10):
-        map_combo = mapGen.type2(5,5,.4)
-        maps.append(map_combo)
 
     best_moves = float('Inf')
-    for i in range(50):
+    for i in range(NUM_DF):
         sum_moves = 0
         num_inf = 0
 
         df = factories[i]
 
-        for j in range(10):
+        for j in range(NUM_MAP):
             map_combo = maps[j]
             moves = framework.run_maze(df, map_combo, GRAPHICS = False)
             
@@ -67,5 +72,5 @@ for x in range(1000):
 
     for n in top_nns:
         factories.append(DecisionFactory.DecisionFactory(n))
-        for i in range(9):
+        for i in range(NUM_DF/5 - 1):
             factories.append(DecisionFactory.DecisionFactory(n.replicate()))
